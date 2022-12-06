@@ -137,6 +137,40 @@ class AppleAuth {
         );
     }
 
+    /**
+     * Revoke tokens
+     * based on the access or refresh token and type of token
+     * @param {string} token 
+     * @param {string} tokenType
+     * @returns {object} Response object
+     */
+    
+    revokeTokens(userToken, tokenType) {
+        return new Promise (
+            (resolve, reject) => {
+                this._tokenGenerator.generate().then((token) => {
+                    const payload = {
+                        token_type_hint: tokenType,
+                        token: userToken,
+                        client_id: this._config.client_id,
+                        client_secret: token,
+                    };
+                    axios({
+                        method: 'POST',
+                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                        data: qs.stringify(payload),
+                        url: 'https://appleid.apple.com/auth/revoke'
+                    }).then((response) => {
+                        resolve(response.data);
+                    }).catch((err) => {
+                        reject("AppleAuth Error - An error occurred while getting response from Apple's servers: " + err);
+                    });
+                }).catch((err) => {
+                    reject(err);
+                });
+            }
+        )
+    }
 }
 
 module.exports = AppleAuth;
