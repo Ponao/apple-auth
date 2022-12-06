@@ -161,7 +161,12 @@ class AppleAuth {
                         data: qs.stringify(payload),
                         url: 'https://appleid.apple.com/auth/revoke'
                     }).then((response) => {
-                        resolve(response.data);
+                        if(response.status === 200)
+                            resolve(true)
+                        else {
+                            console.error(response.data)
+                            reject(false)
+                        }
                     }).catch((err) => {
                         reject("AppleAuth Error - An error occurred while getting response from Apple's servers: " + err);
                     });
